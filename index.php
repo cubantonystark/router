@@ -65,7 +65,7 @@ $bridgedEnabled = getBridgedState();
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title><?php echo _("RaspAP WiFi Configuration Portal"); ?></title>
+    <title><?php echo _("EolianAP WiFi Configuration Portal"); ?></title>
 
     <!-- Bootstrap Core CSS -->
     <link href="dist/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -109,7 +109,7 @@ $bridgedEnabled = getBridgedState();
       <ul class="navbar-nav sidebar sidebar-light d-none d-md-block accordion <?php echo (isset($toggleState)) ? $toggleState : null ; ?>" id="accordionSidebar">
         <!-- Sidebar - Brand -->
         <a class="sidebar-brand d-flex align-items-center justify-content-center" href="wlan0_info">
-          <div class="sidebar-brand-text ml-1"><?php echo RASPI_BRAND_TEXT; ?></div>
+          <div class="sidebar-brand-text ml-1">EolianAP</div>
         </a>
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
