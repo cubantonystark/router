@@ -2,7 +2,7 @@
 ### Overview #
 These steps apply to the latest release of RaspAP, Raspberry Pi OS Lite, Debian and Armbian. Notes for previous versions, Ubuntu Server 18.04 TLS and 19.10 are provided, where applicable. Please refer to this regarding operating systems support.
 
-##Prerequisites
+### Prerequisites #
 Start off by updating your system's package list, then upgrade the kernel, firmware and installed packages to their latest versions:
 
 ```
@@ -11,50 +11,57 @@ sudo apt-get full-upgrade
 ```
 Note that full-upgrade is used rather than a simple upgrade, as this also picks up any dependency changes that may have been made. The kernel and firmware are installed as a Debian package, and so will also get updates when using the procedure above. These packages are updated infrequently and after extensive testing.
 
-Enable wireless operation
+### Enable wireless operation #
 Telecommunications radio bands are subject to regulatory restrictions to ensure interference-free operation. The Linux OS complies with these rules by requiring users to configure a two-letter "WiFi country code". In RPi OS, 5 GHz wireless networking is disabled until this country code has been set, usually as part of the initial installation process. If you have not set your country code or are unsure, check the "WLAN Country" setting in raspi-config's Localisation Options:
 
-
+```
 sudo raspi-config
+```
 To ensure the WiFi radio is not blocked on the Raspberry Pi, execute the following command:
 
-
+```
 sudo rfkill unblock wlan
+```
 Non-RPi OS dependencies
 Operating systems other than RPi OS have some additional dependencies. If you are using RPi OS Lite, skip this section. On Ubuntu Server, add a dependency and the ppa:ondrej/php apt package:
 
-
+```
 sudo apt-get install software-properties-common 
 sudo add-apt-repository ppa:ondrej/php
+```
 On Debian, Armbian and Ubuntu, install dhcpcd5 with the following:
 
-
+```
 sudo apt-get install dhcpcd5
+```
 Install packages
 Install git, lighttpd, php7, hostapd, dnsmasq and some extra packages with the following:
 
-
+```
 sudo apt-get install lighttpd git hostapd dnsmasq iptables-persistent vnstat qrencode php7.3-cgi
+```
 ℹ Note: for Ubuntu, you may replace php7.3-cgi with php7.4-cgi. php5 is no longer supported.
 
 Enable PHP
 Next, enable PHP for lighttpd and restart the service for the settings to take effect:
 
-
+```
 sudo lighttpd-enable-mod fastcgi-php    
 sudo service lighttpd force-reload
 sudo systemctl restart lighttpd.service
+```
 Create the web application
 In these steps we will prepare the web destination and git clone the files to /var/www/html.
 
 ℹ Caution: If this is not a clean installation, be sure you do not have existing files or directories in the web root before executing the rm -rf command.
 
-
+```
 sudo rm -rf /var/www/html
 sudo git clone https://github.com/RaspAP/raspap-webgui /var/www/html
+```
 Copy an extra lighttpd config file to support application routing. This step requires some text substitutions to support user changes to lighttpd's server.document-root setting:
 
-
+```
 WEBROOT="/var/www/html"
 CONFSRC="$WEBROOT/config/50-raspap-router.conf"
 LTROOT=$(grep "server.document-root" /etc/lighttpd/lighttpd.conf | awk -F '=' '{print $2}' | tr -d " \"")
@@ -63,20 +70,23 @@ HTROOT=${WEBROOT/$LTROOT}
 HTROOT=$(echo "$HTROOT" | sed -e 's/\/$//')
 awk "{gsub(\"/REPLACE_ME\",\"$HTROOT\")}1" $CONFSRC > /tmp/50-raspap-router.conf
 sudo cp /tmp/50-raspap-router.conf /etc/lighttpd/conf-available/
+```
 Link it into conf-enabled and restart the web service:
 
-
+```
 sudo ln -s /etc/lighttpd/conf-available/50-raspap-router.conf /etc/lighttpd/conf-enabled/50-raspap-router.conf
 sudo systemctl restart lighttpd.service
+```
 Now comes the fun part. For security reasons, the www-data user which lighttpd runs under is not allowed to start or stop daemons, or run commands like ip link, all of which we want our app to do. So we will add the www-data user to sudoers, but with restrictions on what commands the user can run. Copy the sudoers rules to their destination:
 
-
+```
 cd /var/www/html
 sudo cp installers/raspap.sudoers /etc/sudoers.d/090_raspap
+```
 Configuration directories
 RaspAP uses several directories to manage its own configuration. Create these with the following commands:
 
-
+```
 sudo mkdir /etc/raspap/
 sudo mkdir /etc/raspap/backups
 sudo mkdir /etc/raspap/networking
