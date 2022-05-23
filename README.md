@@ -1,5 +1,5 @@
-#Manual installation
-##Overview
+##Manual installation#
+###Overview#
 These steps apply to the latest release of RaspAP, Raspberry Pi OS Lite, Debian and Armbian. Notes for previous versions, Ubuntu Server 18.04 TLS and 19.10 are provided, where applicable. Please refer to this regarding operating systems support.
 
 ##Prerequisites
